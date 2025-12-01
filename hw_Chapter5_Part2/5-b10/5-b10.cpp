@@ -159,5 +159,6 @@ int main()
 			print_daysline(start_m, month_per_row, r, month_days, month_start_weekday);
 		cout << endl;
 	}
+	cout << endl;
 	return 0;
 }
