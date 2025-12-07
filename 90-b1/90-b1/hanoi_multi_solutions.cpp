@@ -3,8 +3,7 @@
 #include "hanoi_const_value.h"
 #include <iomanip>
 using namespace std;
-
-
+void perform_move_logic(int mode, char src, char dst, int* step, int towers[3][MAX_LAYER], int heights[3]);
 
 /* ----------------------------------------------------------------------------------
 
@@ -27,25 +26,18 @@ using namespace std;
   返 回 值：
   说    明：
 ***************************************************************************/
-void hanoi(int n, char src, char tmp, char dst,int *step)
+void hanoi_universal(int n, char src, char aux, char dst,
+    int mode, int* step, int towers[3][MAX_LAYER], int heights[3])
 {
-    if (n == 0)
+    if (n == 0) 
         return;
-    hanoi(n - 1, src, dst, tmp, step);
 
-    if (step != NULL)
-    {
-        (*step)++;
-        cout << "第" << setw(4) << step << " 步( " << n << "#: " << src << "-->" << dst << ")" << endl;
-    }
-    else
-    {
-        cout << n << "# " << src << "--->" << dst << endl;
+    hanoi_universal(n - 1, src, dst, aux, mode, step, towers, heights);
 
-    }
-    hanoi(n - 1, tmp, src, dst,step);
+    perform_move_logic(mode, src, dst, step, towers, heights);
+
+    hanoi_universal(n - 1, aux, src, dst, mode, step, towers, heights);
 }
-
 void get_hanoi_params(int* n, char* src, char* tmp, char* dst)
 {
     while (true)
@@ -131,21 +123,157 @@ void get_hanoi_params(int* n, char* src, char* tmp, char* dst)
     }
     }
 
-void hanoi_option1()
-{
-    int n;
-    char src, tmp, dst;
-
-    get_hanoi_params(&n, &src, &tmp, &dst);
-    hanoi(n, src, tmp, dst,NULL);
+int char_to_index(char c) {
+    if (c == 'A') 
+        return 0;
+    if (c == 'B') 
+        return 1;
+    else
+        return 2;
 }
 
-void hanoi_option2()
-{
-    int n;
-    char src, tmp, dst;
-    int total_steps = 0;
+void move_disk_data(int towers[3][MAX_LAYER], int heights[3], char src, char dst) {
+    int s = char_to_index(src);
+    int d = char_to_index(dst);
+    if (heights[s] <= 0) 
+        return;
 
-    get_hanoi_params(&n, &src, &tmp, &dst);
-    hanoi(n, src, tmp, dst, &total_steps);
+    int disk = towers[s][heights[s] - 1];
+    heights[s]--;
+
+    towers[d][heights[d]] = disk;
+    heights[d]++;
+}
+
+void print_horizontal(int towers[3][MAX_LAYER], int heights[3]) 
+{
+    char names[] = { 'A', 'B', 'C' };
+
+    for (int i = 0; i < 3; i++) 
+    {
+        cout << names[i] << ": ";
+
+        for (int j = 0; j < heights[i]; j++) 
+        {
+
+            cout << towers[i][j] << " ";
+        }
+
+        cout << endl;
+    }
+    cout << "--------------------------------" << endl;
+}
+
+void print_vertical(int towers[3][MAX_LAYER], int heights[3], int max_h) {
+    // [逻辑来自 5-b7-main.cpp] 从高到低遍历
+    for (int i = max_h - 1; i >= 0; i--) {
+        for (int j = 0; j < 3; j++) {
+            if (i < heights[j]) {
+                // [逻辑来自 5-b7-main.cpp] 打印盘子数字
+                cout << setw(4) << towers[j][i] << "   ";
+            }
+            else {
+                // [逻辑来自 5-b7-main.cpp] 打印柱子杆
+                cout << "   |   ";
+            }
+        }
+        cout << endl;
+    }
+    // [逻辑来自 5-b7-main.cpp] 底部基座
+    cout << "=======A=======B=======C=======" << endl;
+    cout << "--------------------------------" << endl;
+}
+
+void perform_move_logic(int mode, char src, char dst, int* step, int towers[3][MAX_LAYER], int heights[3])
+{
+    //4-b13-1.cpp]
+    if (mode == 1) 
+    {
+        cout << src << " -> " << dst << endl;
+    }
+    else if (mode == 2) 
+    {
+        if (step) (*step)++;
+        cout << "[" << (step ? *step : 0) << "] " << src << " -> " << dst << endl;
+    }
+    // [5-b6-2.cpp 和 5-b7-main.cpp]
+    else if (mode >= 3) 
+    {
+        // 先移动数据
+        move_disk_data(towers, heights, src, dst);
+
+        // 再根据模式选择打印函数
+        if (mode == 3) print_horizontal(towers, heights);
+        else print_vertical(towers, heights, MAX_LAYER);
+    }
+}
+
+
+
+void hanoi_solution_1() 
+{
+    int n; char src, aux, dst;
+    get_hanoi_params(&n, &src, &aux, &dst); 
+    system("cls");
+    
+    hanoi_universal(n, src, aux, dst, 1, nullptr, nullptr, nullptr);
+    cout << "按回车键继续" << endl;
+    while (_getch() != 13);
+}
+
+void hanoi_solution_2() 
+{
+    int n; char src, aux, dst;
+    get_hanoi_params(&n, &src, &aux, &dst);
+
+    int steps = 0;
+    system("cls");
+
+    hanoi_universal(n, src, aux, dst, 2, &steps, nullptr, nullptr);
+
+    cout << "按回车键继续" << endl;
+    while (_getch() != 13);
+}
+
+void hanoi_solution_3() 
+{
+    int n; char src, aux, dst;
+    get_hanoi_params(&n, &src, &aux, &dst);
+
+    int towers[3][MAX_LAYER] = { 0 };
+    int heights[3] = { 0 };
+    int s_idx = char_to_index(src);
+    for (int i = 0; i < n; i++) 
+        towers[s_idx][i] = n - i;
+    heights[s_idx] = n;
+
+    system("cls");
+
+    print_horizontal(towers, heights);
+    hanoi_universal(n, src, aux, dst, 3, nullptr, towers, heights);
+
+    cout << "按回车键继续" << endl;
+    while (_getch() != 13);
+}
+
+void hanoi_solution_4() 
+{
+    int n; char src, aux, dst;
+    get_hanoi_params(&n, &src, &aux, &dst);
+
+    int towers[3][MAX_LAYER] = { 0 };
+    int heights[3] = { 0 };
+    int s_idx = char_to_index(src);
+    for (int i = 0; i < n; i++) towers[s_idx][i] = n - i;
+    heights[s_idx] = n;
+
+    system("cls");
+ 
+    print_vertical(towers, heights, MAX_LAYER);
+    _getch(); 
+
+    hanoi_universal(n, src, aux, dst, 4, nullptr, towers, heights);
+
+    cout << "按回车键继续" << endl;
+    while (_getch() != 13);
 }

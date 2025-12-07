@@ -4,11 +4,12 @@
 #include "hanoi_const_value.h"
 using namespace std;
 //其余需要的头文件，按需加入，不要违规
-
 int hanoi_menu();
-void hanoi_option1();
-//函数声明
-
+// 功能执行函数
+void hanoi_solution_1(); // 菜单1：基本解
+void hanoi_solution_2(); // 菜单2：基本解(步数)
+void hanoi_solution_3(); // 菜单3：横向数组
+void hanoi_solution_4(); // 菜单4：纵向数组
 /* ----------------------------------------------------------------------------------
 
      本文件功能：
@@ -53,19 +54,19 @@ int main()
 		switch (choice) {
 			case 1:
 				//调用函数
-				hanoi_option1();
+				hanoi_solution_1();
 				system("pause");
 				break;
 			case 2:
-				//2
+				hanoi_solution_2();
 				system("pause");
 				break;
 			case 3:
-				//3
+				hanoi_solution_3();
 				system("pause");
 				break;
 			case 4:
-				//4
+				hanoi_solution_4();
 				system("pause");
 				break;
 			case 5:
