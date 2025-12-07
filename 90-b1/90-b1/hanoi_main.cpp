@@ -1,8 +1,13 @@
-/* 班级 学号 姓名 */
-
+/*卓01    2553149    谢怡萱*/
+#include <iostream>
 #include <conio.h>   //本源程序允许使用，因为要_getch()
-
+#include "hanoi_const_value.h"
+using namespace std;
 //其余需要的头文件，按需加入，不要违规
+
+int hanoi_menu();
+void hanoi_option1();
+//函数声明
 
 /* ----------------------------------------------------------------------------------
 
@@ -39,6 +44,58 @@ int main()
 	}
 
 	/* 从这里继续你的程序 */
+	bool isrunning = true;
+	while (isrunning)
+	{
+		int choice = hanoi_menu();
+		cout << endl;
+
+		switch (choice) {
+			case 1:
+				//调用函数
+				hanoi_option1();
+				system("pause");
+				break;
+			case 2:
+				//2
+				system("pause");
+				break;
+			case 3:
+				//3
+				system("pause");
+				break;
+			case 4:
+				//4
+				system("pause");
+				break;
+			case 5:
+				//5
+				system("pause");
+				break;
+			case 6:
+				//6
+				system("pause");
+				break;
+			case 7:
+				//7
+				system("pause");
+				break;
+			case 8:
+				//8
+				system("pause");
+				break;
+			case 9:
+				//9
+				system("pause");
+				break;
+			case 0:
+				isrunning = false;
+				break;
+			default://据说是好习惯（）
+				break;
+		}
+
+	}
 
 
 	return 0;
